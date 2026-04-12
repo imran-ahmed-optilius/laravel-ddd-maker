@@ -1,0 +1,28 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Infra\{{ folder }}\Services;
+
+use App\Domain\{{ folder }}\Repositories\I{{ primaryRepo }};
+use App\Domain\{{ folder }}\Services\I{{ prefix }}Service;
+use App\Domain\{{ folder }}\Services\Output\{{ primaryOutput }};
+
+class {{ prefix }}Service implements I{{ prefix }}Service
+{
+    public function __construct(
+        private readonly I{{ primaryRepo }} $repository,
+    ) {}
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function handle(array $data): {{ primaryOutput }}
+    {
+        $record = $this->repository->findAll($data);
+
+        return new {{ primaryOutput }}(
+            // TODO: map $record fields to {{ primaryOutput }} constructor
+        );
+    }
+}

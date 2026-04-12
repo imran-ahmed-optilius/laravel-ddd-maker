@@ -1,0 +1,54 @@
+{
+    "name": "imran-ahmed-optilius/laravel-ddd-maker",
+    "description": "Artisan command to scaffold Clean Architecture + DDD feature files for Laravel (Action, Request, UseCase, Service, Repository, Output DTO, Response).",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "ddd",
+        "clean-architecture",
+        "artisan",
+        "scaffold",
+        "generator",
+        "boilerplate"
+    ],
+    "authors": [
+        {
+            "name": "Imran Ahmed",
+            "homepage": "https://github.com/imran-ahmed-optilius"
+        }
+    ],
+    "homepage": "https://github.com/imran-ahmed-optilius/laravel-ddd-maker",
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^10.0|^11.0|^12.0",
+        "illuminate/console": "^10.0|^11.0|^12.0",
+        "illuminate/filesystem": "^10.0|^11.0|^12.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0|^9.0|^10.0",
+        "phpunit/phpunit": "^10.0|^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ImranAhmedOptilius\\DddMaker\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ImranAhmedOptilius\\DddMaker\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ImranAhmedOptilius\\DddMaker\\DddMakerServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

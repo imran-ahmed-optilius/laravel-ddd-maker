@@ -1,0 +1,26 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\UseCases\{{ folder }};
+
+use App\Domain\{{ folder }}\Services\I{{ prefix }}Service;
+use App\Http\Responses\Api\V1\{{ folder }}\I{{ primaryResponse }};
+use App\Http\Responses\Api\V1\{{ folder }}\{{ primaryResponse }};
+
+class {{ prefix }}UseCase implements I{{ prefix }}UseCase
+{
+    public function __construct(
+        private readonly I{{ prefix }}Service $service,
+    ) {}
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function execute(array $data): I{{ primaryResponse }}
+    {
+        $output = $this->service->handle($data);
+
+        return new {{ primaryResponse }}($output);
+    }
+}

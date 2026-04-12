@@ -1,0 +1,13 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Responses\Api\V1\{{ folder }};
+
+interface I{{ responseName }}
+{
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArrayResponse(): array;
+}

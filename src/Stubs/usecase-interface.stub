@@ -1,0 +1,15 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\UseCases\{{ folder }};
+
+use App\Http\Responses\Api\V1\{{ folder }}\I{{ primaryResponse }};
+
+interface I{{ prefix }}UseCase
+{
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function execute(array $data): I{{ primaryResponse }};
+}

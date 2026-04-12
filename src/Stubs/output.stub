@@ -1,0 +1,18 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domain\{{ folder }}\Services\Output;
+
+class {{ outputName }}
+{
+    public function __construct(
+        // TODO: add private readonly properties
+        // private readonly string $id,
+        // private readonly string $name,
+    ) {}
+
+    // TODO: add public getters
+    // public function getId(): string { return $this->id; }
+    // public function getName(): string { return $this->name; }
+}

@@ -1,0 +1,27 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Responses\Api\V1\{{ folder }};
+
+use App\Domain\{{ folder }}\Services\Output\{{ primaryOutput }};
+use App\Http\Responses\BaseResponse;
+
+class {{ responseName }} extends BaseResponse implements I{{ responseName }}
+{
+    public function __construct(
+        private readonly {{ primaryOutput }} $output,
+    ) {}
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArrayResponse(): array
+    {
+        return [
+            // TODO: map output DTO fields
+            // 'id'   => $this->output->getId(),
+            // 'name' => $this->output->getName(),
+        ];
+    }
+}
