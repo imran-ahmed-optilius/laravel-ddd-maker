@@ -16,48 +16,64 @@ class FeatureGenerator
     /**
      * Generate all feature files and return a status report.
      *
-     * @param  string   $prefix
-     * @param  string   $folder
-     * @param  string   $requestName
-     * @param  string[] $responses
-     * @param  string[] $outputs
-     * @param  string[] $repositories
+     * @param  string        $prefix
+     * @param  string        $folder
+     * @param  string|null   $requestName     null = skip Request generation
+     * @param  string[]      $responses
+     * @param  string[]      $outputs
+     * @param  string[]      $repositories
+     * @param  string[]      $voNames         Value Object class names
+     * @param  string|null   $entityName      null = skip Entity generation
+     * @param  string|null   $modelName       null = skip Eloquent Model generation
+     * @param  string|null   $repoInputName   null = skip Repository Input DTO
+     * @param  string|null   $servInputName   null = skip Service Input DTO
      * @return array<int, array{path: string, created: bool}>
      */
     public function generate(
         string $prefix,
         string $folder,
-        string $requestName,
+        ?string $requestName,
         array $responses,
         array $outputs,
         array $repositories,
+        array $voNames = [],
+        ?string $entityName = null,
+        ?string $modelName = null,
+        ?string $repoInputName = null,
+        ?string $servInputName = null,
     ): array {
         $results = [];
 
         $vars = [
             'prefix'          => $prefix,
             'folder'          => $folder,
-            'requestName'     => $requestName,
+            'requestName'     => $requestName ?? '',
             'primaryRepo'     => $repositories[0],
             'primaryOutput'   => $outputs[0],
             'primaryResponse' => $responses[0],
+            'repoInputName'   => $repoInputName ?? '',
+            'servInputName'   => $servInputName ?? '',
+            'entityName'      => $entityName ?? '',
+            'modelName'       => $modelName ?? '',
         ];
 
-        // Request
-        $results[] = $this->make(
-            "app/Http/Requests/Api/V1/{$folder}/{$requestName}.php",
-            'request',
-            $vars
-        );
+        // ── A. Request (optional) ──────────────────────────────────────────
+        if ($requestName !== null) {
+            $results[] = $this->make(
+                "app/Http/Requests/Api/V1/{$folder}/{$requestName}.php",
+                'request',
+                $vars
+            );
+        }
 
-        // Action
+        // ── B. Action ──────────────────────────────────────────────────────
         $results[] = $this->make(
             "app/Http/Controllers/Api/V1/{$folder}/{$prefix}Action.php",
-            'action',
+            $requestName !== null ? 'action' : 'action-no-request',
             $vars
         );
 
-        // UseCase interface + implementation
+        // ── C. UseCase interface + implementation ──────────────────────────
         $results[] = $this->make(
             "app/UseCases/{$folder}/I{$prefix}UseCase.php",
             'usecase-interface',
@@ -69,7 +85,7 @@ class FeatureGenerator
             $vars
         );
 
-        // Domain Service interface + Infra implementation
+        // ── D. Domain Service interface + Infra implementation ─────────────
         $results[] = $this->make(
             "app/Domain/{$folder}/Services/I{$prefix}Service.php",
             'service-interface',
@@ -81,7 +97,16 @@ class FeatureGenerator
             $vars
         );
 
-        // Repositories
+        // ── D-opt. Service Input DTO ───────────────────────────────────────
+        if ($servInputName !== null) {
+            $results[] = $this->make(
+                "app/Domain/{$folder}/Services/Input/{$servInputName}.php",
+                'service-input',
+                array_merge($vars, ['servInputName' => $servInputName])
+            );
+        }
+
+        // ── E. Repositories ────────────────────────────────────────────────
         foreach ($repositories as $repo) {
             $repoVars = array_merge($vars, ['repoName' => $repo]);
 
@@ -97,7 +122,16 @@ class FeatureGenerator
             );
         }
 
-        // Output DTOs
+        // ── E-opt. Repository Input DTO ────────────────────────────────────
+        if ($repoInputName !== null) {
+            $results[] = $this->make(
+                "app/Domain/{$folder}/Repositories/Input/{$repoInputName}.php",
+                'repository-input',
+                array_merge($vars, ['repoInputName' => $repoInputName])
+            );
+        }
+
+        // ── F. Output DTOs ─────────────────────────────────────────────────
         foreach ($outputs as $output) {
             $results[] = $this->make(
                 "app/Domain/{$folder}/Services/Output/{$output}.php",
@@ -106,7 +140,7 @@ class FeatureGenerator
             );
         }
 
-        // Responses
+        // ── G. Responses ───────────────────────────────────────────────────
         foreach ($responses as $response) {
             $responseVars = array_merge($vars, ['responseName' => $response]);
 
@@ -119,6 +153,33 @@ class FeatureGenerator
                 "app/Http/Responses/Api/V1/{$folder}/{$response}.php",
                 'response',
                 $responseVars
+            );
+        }
+
+        // ── H. Value Objects (optional) ────────────────────────────────────
+        foreach ($voNames as $vo) {
+            $results[] = $this->make(
+                "app/Domain/{$folder}/Vo/{$vo}.php",
+                'value-object',
+                array_merge($vars, ['voName' => $vo])
+            );
+        }
+
+        // ── I. Entity (optional) ───────────────────────────────────────────
+        if ($entityName !== null) {
+            $results[] = $this->make(
+                "app/Models/Entities/{$entityName}.php",
+                'entity',
+                array_merge($vars, ['entityName' => $entityName])
+            );
+        }
+
+        // ── J. Eloquent Model (optional) ───────────────────────────────────
+        if ($modelName !== null) {
+            $results[] = $this->make(
+                "app/Models/{$modelName}.php",
+                'model',
+                array_merge($vars, ['modelName' => $modelName])
             );
         }
 

@@ -1,0 +1,18 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domain\{{ folder }}\Services\Input;
+
+class {{ servInputName }}
+{
+    public function __construct(
+        // TODO: add private readonly properties for service input arguments
+        // private readonly string $id,
+        // private readonly string $status,
+    ) {}
+
+    // TODO: add public getters
+    // public function getId(): string { return $this->id; }
+    // public function getStatus(): string { return $this->status; }
+}

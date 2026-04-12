@@ -1,0 +1,26 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models\Entities;
+
+/**
+ * Domain Entity: {{ entityName }}
+ *
+ * Represents the domain model independently of the Eloquent ORM.
+ * Populated by the Repository from raw data or Eloquent models.
+ */
+class {{ entityName }}
+{
+    public function __construct(
+        // TODO: add private readonly properties representing domain state
+        // private readonly int $id,
+        // private readonly string $name,
+        // private readonly string $status,
+    ) {}
+
+    // TODO: add public getters
+    // public function getId(): int { return $this->id; }
+    // public function getName(): string { return $this->name; }
+    // public function getStatus(): string { return $this->status; }
+}

@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-04-12
+
+### Added
+- **Request is now optional** — wizard asks if you need a FormRequest; if yes, a custom name can also be provided
+- **Service Input DTO** — optional `{Prefix}ServInput` at `app/Domain/{Folder}/Services/Input/`
+- **Repository Input DTO** — optional `{RepoName}Input` at `app/Domain/{Folder}/Repositories/Input/`
+- **Value Objects (VO)** — optional, supports multiple VO classes at `app/Domain/{Folder}/Vo/`
+- **Domain Entity** — optional entity class at `app/Models/Entities/`
+- **Eloquent Model** — optional model extending `BaseModel` at `app/Models/`
+- **Action without Request** — when Request is skipped, Action uses `Illuminate\Http\Request` directly
+- Feature folder is now asked last, matching the updated spec question order
+- File summary is now grouped by category for easier review
+
 ## [1.0.0] - 2025-04-12
 
 ### Added

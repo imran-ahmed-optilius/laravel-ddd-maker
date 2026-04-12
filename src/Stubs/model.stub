@@ -1,0 +1,35 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+use App\Models\BaseModel;
+
+class {{ modelName }} extends BaseModel
+{
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = ''; // TODO: set table name
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        // TODO: define fillable columns
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        // TODO: define casts (e.g. 'created_at' => 'datetime')
+    ];
+}

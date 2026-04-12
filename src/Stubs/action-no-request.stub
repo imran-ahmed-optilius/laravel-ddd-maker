@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers\Api\V1\{{ folder }};
+
+use App\Http\Controllers\Controller;
+use App\UseCases\{{ folder }}\I{{ prefix }}UseCase;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class {{ prefix }}Action extends Controller
+{
+    public function __construct(
+        private readonly I{{ prefix }}UseCase $useCase,
+    ) {}
+
+    public function __invoke(Request $request): JsonResponse
+    {
+        $response = $this->useCase->execute($request->all());
+
+        return response()->json($response->toArrayResponse());
+    }
+}
