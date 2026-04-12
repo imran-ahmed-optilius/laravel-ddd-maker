@@ -17,7 +17,7 @@ class {{ prefix }}Action extends Controller
 
     public function __invoke(Request $request): JsonResponse
     {
-        $response = $this->useCase->execute($request->all());
+        $response = ($this->useCase)($request->all());
 
         return response()->json($response->toArrayResponse());
     }

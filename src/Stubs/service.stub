@@ -17,9 +17,9 @@ class {{ prefix }}Service implements I{{ prefix }}Service
     /**
      * @param array<string, mixed> $data
      */
-    public function handle(array $data): {{ primaryOutput }}
+    public function __invoke(array $data): {{ primaryOutput }}
     {
-        $record = $this->repository->findAll($data);
+        $record = ($this->repository)($data);
 
         return new {{ primaryOutput }}(
             // TODO: map $record fields to {{ primaryOutput }} constructor

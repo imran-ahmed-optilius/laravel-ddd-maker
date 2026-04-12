@@ -17,9 +17,9 @@ class {{ prefix }}UseCase implements I{{ prefix }}UseCase
     /**
      * @param array<string, mixed> $data
      */
-    public function execute(array $data): I{{ primaryResponse }}
+    public function __invoke(array $data): I{{ primaryResponse }}
     {
-        $output = $this->service->handle($data);
+        $output = ($this->service)($data);
 
         return new {{ primaryResponse }}($output);
     }

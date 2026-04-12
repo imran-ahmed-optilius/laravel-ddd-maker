@@ -9,7 +9,5 @@ interface I{{ repoName }}
     /**
      * @param  array<string, mixed> $filters
      */
-    public function findAll(array $filters = []): mixed;
-
-    public function findById(int|string $id): mixed;
+    public function __invoke(array $filters = []): mixed;
 }

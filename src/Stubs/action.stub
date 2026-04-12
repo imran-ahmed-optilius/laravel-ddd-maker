@@ -17,7 +17,7 @@ class {{ prefix }}Action extends Controller
 
     public function __invoke({{ requestName }} $request): JsonResponse
     {
-        $response = $this->useCase->execute($request->validated());
+        $response = ($this->useCase)($request->validated());
 
         return response()->json($response->toArrayResponse());
     }
