@@ -33,72 +33,96 @@ Laravel's auto-discovery will register the service provider automatically.
 ### Interactive wizard
 
 ```bash
-php artisan make:feature
+php artisan make:ddd
 ```
 
 The command walks you through everything step by step:
 
 ```
 ╔═══════════════════════════════════════════════════╗
-║  Laravel DDD Maker  by imran-ahmed-optilius        ║
-║  Clean Architecture + Domain-Driven Design         ║
+║  Laravel DDD Maker  by imran-ahmed-optilius       ║
+║  Clean Architecture + Domain-Driven Design        ║
 ╚═══════════════════════════════════════════════════╝
 
   Enter the file prefix (e.g. ForHomePageTeacherGet):
   > ForHomePageTeacherGet
 
-  Enter the feature folder name (e.g. HomePage):
-  > HomePage
+  ── Complexity & Naming Questions ─────────────────────────────
 
-  ── Custom Names ──────────────────────────────────
-  Press ENTER to accept the default ForHomePageTeacherGet* naming.
+  Will this feature require Value Objects (VO) for IDs, status, or types? (yes/no) [no]:
+  > no
 
-  Request class [default: ForHomePageTeacherGetRequest]:
+  Will the Repository require a dedicated Input DTO for its arguments? (yes/no) [no]:
+  > no
+
+  Will the Service require a dedicated Input DTO for its arguments? (yes/no) [no]:
+  > no
+
+  Will the Response have a different or multiple names? (yes/no) [no]:
+  > no
+
+  Will the Output (DTO) have a different or multiple names? (yes/no) [no]:
+  > no
+
+  Will the Repository have a different or multiple names? (yes/no) [no]:
+  > no
+
+  Is there a need for a domain Entity class? (yes/no) [no]:
+  > no
+
+  Should an Eloquent Model be generated? (yes/no) [no]:
+  > no
+
+  Will this feature need a Request (Form Request) class? (yes/no) [yes]:
+  > yes
+  Request class name [default: ForHomePageTeacherGetRequest]:
   >
 
-  Response(s) — use a custom or multiple names? (yes/no) [no]:
-  > no
+  Enter the feature folder name (e.g. HomePage or MembershipStatus/History):
+  > HomePage
 
-  Output DTO(s) — use a custom or multiple names? (yes/no) [no]:
-  > no
+  ── Files to be generated ─────────────────────────────────────
 
-  Repository(ies) — use a custom or multiple names? (yes/no) [no]:
-  > no
-
-  ── Files to be generated ─────────────────────────
-    • app/Http/Requests/Api/V1/HomePage/ForHomePageTeacherGetRequest.php
-    • app/Http/Controllers/Api/V1/HomePage/ForHomePageTeacherGetAction.php
-    • app/UseCases/HomePage/IForHomePageTeacherGetUseCase.php
-    • app/UseCases/HomePage/ForHomePageTeacherGetUseCase.php
-    • app/Domain/HomePage/Services/IForHomePageTeacherGetService.php
-    • app/Infra/HomePage/Services/ForHomePageTeacherGetService.php
-    • app/Domain/HomePage/Repositories/IForHomePageTeacherGetRepository.php
-    • app/Infra/HomePage/Repositories/ForHomePageTeacherGetRepository.php
-    • app/Domain/HomePage/Services/Output/ForHomePageTeacherGetOutput.php
-    • app/Http/Responses/Api/V1/HomePage/IForHomePageTeacherGetResponse.php
-    • app/Http/Responses/Api/V1/HomePage/ForHomePageTeacherGetResponse.php
+    Request:
+      • app/Http/Requests/Api/V1/HomePage/ForHomePageTeacherGetRequest.php
+    Action:
+      • app/Http/Controllers/Api/V1/HomePage/ForHomePageTeacherGetAction.php
+    Use Case:
+      • app/UseCases/HomePage/IForHomePageTeacherGetUseCase.php
+      • app/UseCases/HomePage/ForHomePageTeacherGetUseCase.php
+    Domain Service:
+      • app/Domain/HomePage/Services/IForHomePageTeacherGetService.php
+      • app/Infra/HomePage/Services/ForHomePageTeacherGetService.php
+    Repository:
+      • app/Domain/HomePage/Repositories/IForHomePageTeacherGetRepository.php
+      • app/Infra/HomePage/Repositories/ForHomePageTeacherGetRepository.php
+    Output DTO:
+      • app/Domain/HomePage/Services/Output/ForHomePageTeacherGetOutput.php
+    Response:
+      • app/Http/Responses/Api/V1/HomePage/IForHomePageTeacherGetResponse.php
+      • app/Http/Responses/Api/V1/HomePage/ForHomePageTeacherGetResponse.php
 
   Generate all files now? (yes/no) [yes]:
   > yes
 
-  ── Generating ────────────────────────────────────
+  ── Generating ────────────────────────────────────────────────
   ✔ CREATED  app/Http/Requests/Api/V1/HomePage/ForHomePageTeacherGetRequest.php
   ✔ CREATED  app/Http/Controllers/Api/V1/HomePage/ForHomePageTeacherGetAction.php
   ...
 
-  ── Add to AppServiceProvider::register() ─────────
+  ── Add to AppServiceProvider::register() ─────────────────────
   ...
 
-  ── Add to routes/api.php ─────────────────────────
-  Route::get('/for-home-page-teacher-get', App\Http\Controllers\Api\V1\HomePage\ForHomePageTeacherGetAction::class);
+  ── Add to routes/api.php ─────────────────────────────────────
+  Route::get('/for-home-page-teacher-get', \App\Http\Controllers\Api\V1\HomePage\ForHomePageTeacherGetAction::class);
 
   Done! All files generated successfully.
 ```
 
-### With inline options (skips first two prompts)
+### With inline options
 
 ```bash
-php artisan make:feature --prefix=ForHomePageTeacherGet --folder=HomePage
+php artisan make:ddd --prefix=ForHomePageTeacherGet --folder=HomePage
 ```
 
 ### Multiple repositories, outputs, or responses
@@ -113,22 +137,32 @@ When the wizard asks *"use a custom or multiple names?"*, answer `yes` and enter
 app/
 ├── Http/
 │   ├── Requests/Api/V1/{Folder}/
-│   │   └── {Prefix}Request.php               ← FormRequest with rules()
+│   │   └── {Prefix}Request.php               ← FormRequest (Optional)
 │   ├── Controllers/Api/V1/{Folder}/
 │   │   └── {Prefix}Action.php                ← Invokable controller
 │   └── Responses/Api/V1/{Folder}/
 │       ├── I{Response}.php                   ← Response interface
 │       └── {Response}.php                    ← Response implementation
+├── Models/
+│   ├── {Model}.php                           ← Eloquent Model (Optional)
+│   └── Entities/
+│       └── {Entity}.php                      ← Domain Entity (Optional)
 ├── UseCases/{Folder}/
 │   ├── I{Prefix}UseCase.php                  ← UseCase interface
 │   └── {Prefix}UseCase.php                   ← UseCase implementation
 ├── Domain/{Folder}/
+│   ├── Vo/
+│   │   └── {Vo}.php                          ← Value Object (Optional)
 │   ├── Services/
 │   │   ├── I{Prefix}Service.php              ← Domain Service interface
+│   │   ├── Input/
+│   │   │   └── {Prefix}ServInput.php         ← Service Input DTO (Optional)
 │   │   └── Output/
 │   │       └── {Output}.php                  ← Output DTO
 │   └── Repositories/
-│       └── I{Repo}.php                       ← Repository interface
+│       ├── I{Repo}.php                       ← Repository interface
+│       └── Input/
+│           └── {Repo}Input.php               ← Repository Input DTO (Optional)
 └── Infra/{Folder}/
     ├── Services/
     │   └── {Prefix}Service.php               ← Service implementation
