@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ImranAhmedOptilius\DddMaker;
 
 use Illuminate\Support\ServiceProvider;
-use ImranAhmedOptilius\DddMaker\Commands\MakeFeatureCommand;
+use ImranAhmedOptilius\DddMaker\Commands\MakeDddCommand;
 
 class DddMakerServiceProvider extends ServiceProvider
 {
@@ -18,7 +18,7 @@ class DddMakerServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                MakeFeatureCommand::class,
+                MakeDddCommand::class,
             ]);
         }
     }

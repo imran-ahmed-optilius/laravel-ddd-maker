@@ -18,24 +18,30 @@ class FeatureGenerator
      *
      * @param  string        $prefix
      * @param  string        $folder
-     * @param  string|null   $requestName     null = skip Request generation
+     * @param  string|null   $requestName        null = skip Request generation
      * @param  string[]      $responses
+     * @param  bool          $generateResponses   false = reuse existing, skip file creation
      * @param  string[]      $outputs
+     * @param  bool          $generateOutputs     false = reuse existing, skip file creation
      * @param  string[]      $repositories
-     * @param  string[]      $voNames         Value Object class names
-     * @param  string|null   $entityName      null = skip Entity generation
-     * @param  string|null   $modelName       null = skip Eloquent Model generation
-     * @param  string|null   $repoInputName   null = skip Repository Input DTO
-     * @param  string|null   $servInputName   null = skip Service Input DTO
-     * @return array<int, array{path: string, created: bool}>
+     * @param  bool          $generateRepositories false = reuse existing, skip file creation
+     * @param  string[]      $voNames
+     * @param  string|null   $entityName
+     * @param  string|null   $modelName
+     * @param  string|null   $repoInputName
+     * @param  string|null   $servInputName
+     * @return array<int, array{path: string, created: bool, skipped_existing: bool}>
      */
     public function generate(
         string $prefix,
         string $folder,
         ?string $requestName,
         array $responses,
+        bool $generateResponses,
         array $outputs,
+        bool $generateOutputs,
         array $repositories,
+        bool $generateRepositories,
         array $voNames = [],
         ?string $entityName = null,
         ?string $modelName = null,
@@ -57,7 +63,7 @@ class FeatureGenerator
             'modelName'       => $modelName ?? '',
         ];
 
-        // ── A. Request (optional) ──────────────────────────────────────────
+        // A. Request (optional)
         if ($requestName !== null) {
             $results[] = $this->make(
                 "app/Http/Requests/Api/V1/{$folder}/{$requestName}.php",
@@ -66,14 +72,14 @@ class FeatureGenerator
             );
         }
 
-        // ── B. Action ──────────────────────────────────────────────────────
+        // B. Action — choose stub based on whether a request exists
         $results[] = $this->make(
             "app/Http/Controllers/Api/V1/{$folder}/{$prefix}Action.php",
             $requestName !== null ? 'action' : 'action-no-request',
             $vars
         );
 
-        // ── C. UseCase interface + implementation ──────────────────────────
+        // C. UseCase interface + implementation
         $results[] = $this->make(
             "app/UseCases/{$folder}/I{$prefix}UseCase.php",
             'usecase-interface',
@@ -85,7 +91,7 @@ class FeatureGenerator
             $vars
         );
 
-        // ── D. Domain Service interface + Infra implementation ─────────────
+        // D. Domain Service interface + Infra implementation
         $results[] = $this->make(
             "app/Domain/{$folder}/Services/I{$prefix}Service.php",
             'service-interface',
@@ -97,7 +103,7 @@ class FeatureGenerator
             $vars
         );
 
-        // ── D-opt. Service Input DTO ───────────────────────────────────────
+        // D-opt. Service Input DTO
         if ($servInputName !== null) {
             $results[] = $this->make(
                 "app/Domain/{$folder}/Services/Input/{$servInputName}.php",
@@ -106,23 +112,27 @@ class FeatureGenerator
             );
         }
 
-        // ── E. Repositories ────────────────────────────────────────────────
+        // E. Repositories — generate new or mark as reused existing
         foreach ($repositories as $repo) {
             $repoVars = array_merge($vars, ['repoName' => $repo]);
 
-            $results[] = $this->make(
-                "app/Domain/{$folder}/Repositories/I{$repo}.php",
-                'repository-interface',
-                $repoVars
-            );
-            $results[] = $this->make(
-                "app/Infra/{$folder}/Repositories/{$repo}.php",
-                'repository',
-                $repoVars
-            );
+            if ($generateRepositories) {
+                $results[] = $this->make(
+                    "app/Domain/{$folder}/Repositories/I{$repo}.php",
+                    'repository-interface',
+                    $repoVars
+                );
+                $results[] = $this->make(
+                    "app/Infra/{$folder}/Repositories/{$repo}.php",
+                    'repository',
+                    $repoVars
+                );
+            } else {
+                $results[] = $this->reused("(existing) {$repo}");
+            }
         }
 
-        // ── E-opt. Repository Input DTO ────────────────────────────────────
+        // E-opt. Repository Input DTO
         if ($repoInputName !== null) {
             $results[] = $this->make(
                 "app/Domain/{$folder}/Repositories/Input/{$repoInputName}.php",
@@ -131,32 +141,40 @@ class FeatureGenerator
             );
         }
 
-        // ── F. Output DTOs ─────────────────────────────────────────────────
+        // F. Output DTOs — generate new or mark as reused existing
         foreach ($outputs as $output) {
-            $results[] = $this->make(
-                "app/Domain/{$folder}/Services/Output/{$output}.php",
-                'output',
-                array_merge($vars, ['outputName' => $output])
-            );
+            if ($generateOutputs) {
+                $results[] = $this->make(
+                    "app/Domain/{$folder}/Services/Output/{$output}.php",
+                    'output',
+                    array_merge($vars, ['outputName' => $output])
+                );
+            } else {
+                $results[] = $this->reused("(existing) {$output}");
+            }
         }
 
-        // ── G. Responses ───────────────────────────────────────────────────
+        // G. Responses — generate new or mark as reused existing
         foreach ($responses as $response) {
             $responseVars = array_merge($vars, ['responseName' => $response]);
 
-            $results[] = $this->make(
-                "app/Http/Responses/Api/V1/{$folder}/I{$response}.php",
-                'response-interface',
-                $responseVars
-            );
-            $results[] = $this->make(
-                "app/Http/Responses/Api/V1/{$folder}/{$response}.php",
-                'response',
-                $responseVars
-            );
+            if ($generateResponses) {
+                $results[] = $this->make(
+                    "app/Http/Responses/Api/V1/{$folder}/I{$response}.php",
+                    'response-interface',
+                    $responseVars
+                );
+                $results[] = $this->make(
+                    "app/Http/Responses/Api/V1/{$folder}/{$response}.php",
+                    'response',
+                    $responseVars
+                );
+            } else {
+                $results[] = $this->reused("(existing) {$response}");
+            }
         }
 
-        // ── H. Value Objects (optional) ────────────────────────────────────
+        // H. Value Objects (optional)
         foreach ($voNames as $vo) {
             $results[] = $this->make(
                 "app/Domain/{$folder}/Vo/{$vo}.php",
@@ -165,7 +183,7 @@ class FeatureGenerator
             );
         }
 
-        // ── I. Entity (optional) ───────────────────────────────────────────
+        // I. Entity (optional)
         if ($entityName !== null) {
             $results[] = $this->make(
                 "app/Models/Entities/{$entityName}.php",
@@ -174,7 +192,7 @@ class FeatureGenerator
             );
         }
 
-        // ── J. Eloquent Model (optional) ───────────────────────────────────
+        // J. Eloquent Model (optional)
         if ($modelName !== null) {
             $results[] = $this->make(
                 "app/Models/{$modelName}.php",
@@ -190,19 +208,29 @@ class FeatureGenerator
      * Render a stub and write it to disk (skips if file already exists).
      *
      * @param  array<string, mixed> $vars
-     * @return array{path: string, created: bool}
+     * @return array{path: string, created: bool, skipped_existing: bool}
      */
     private function make(string $path, string $stub, array $vars): array
     {
         $fullPath = base_path($path);
 
         if ($this->files->exists($fullPath)) {
-            return ['path' => $path, 'created' => false];
+            return ['path' => $path, 'created' => false, 'skipped_existing' => false];
         }
 
         $this->files->ensureDirectoryExists(dirname($fullPath));
         $this->files->put($fullPath, $this->renderer->render($stub, $vars));
 
-        return ['path' => $path, 'created' => true];
+        return ['path' => $path, 'created' => true, 'skipped_existing' => false];
+    }
+
+    /**
+     * Return a result entry for a reused (existing) class — no file written.
+     *
+     * @return array{path: string, created: bool, skipped_existing: bool}
+     */
+    private function reused(string $label): array
+    {
+        return ['path' => $label, 'created' => false, 'skipped_existing' => true];
     }
 }
